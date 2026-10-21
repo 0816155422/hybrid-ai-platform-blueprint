@@ -1,0 +1,49 @@
+# ตัวอย่างเกณฑ์ตรวจสอบของ Gate (YAML)
+# ใช้เป็นเทมเพลตสำหรับทุก Gate — แก้ phase, criteria, และ decision_owner ตามเฟส
+# Gate ตรวจสอบ 3 อย่างเสมอ: schema consistency, provenance consistency, completeness
+
+gate_id: gate0
+phase_checked: phase0  # Gate 0 ตรวจหลังเฟส 0 เสร็จ
+previous_phase: user_input  # เฟสก่อนหน้า (สำหรับตรวจ cross-phase consistency)
+decision_owner: user:project_owner  # ใครมีสิทธิ์ตัดสิน PASS/FAIL/BLOCKED สุดท้าย
+
+criteria:
+  - id: G0-001
+    name: ทุก sub-problem มี evidence requirement
+    check_method: for_each_subproblem: has_field(evidence_type) AND has_field(required_sources)
+    fail_action: RETURN_TO_PHASE  # ส่งกลับไปเฟส 0 ทำใหม่
+    severity: high
+
+  - id: G0-002
+    name: ไม่มี assumption ที่ไม่ได้บันทึก
+    check_method: all_assumptions_listed_in_checklog AND status != HIDDEN
+    fail_action: RETURN_TO_PHASE
+    severity: high
+
+  - id: G0-003
+    name: ผู้ใช้ยืนยันโจทย์แล้ว (user confirmation)
+    check_method: checklog_has_entry(entry_type=CHECK, item=user_confirmation, status=DONE)
+    fail_action: BLOCKED  # หยุดรอคนตัดสินใจ (ไม่ส่งกลับไปทำ เพราะรอคน ไม่ใช่ทำผิด)
+    severity: medium
+
+  - id: G0-004
+    name: ทุก record ผ่าน Master Adapter (schema ถูกต้อง)
+    check_method: all_records_validate_against(master-adapter.schema.json)
+    fail_action: RETURN_TO_PHASE
+    severity: high
+
+  - id: G0-005
+    name: ขอบเขต (scope) และผู้อนุมัติชัดเจน
+    check_method: has_field(scope_in_scope) AND has_field(scope_out_of_scope) AND has_field(approver)
+    fail_action: BLOCKED
+    severity: medium
+
+pass_condition: ALL criteria severity=high PASS AND (medium criteria PASS OR documented_waiver)
+blocked_condition: ANY criteria fail_action=BLOCKED
+fail_condition: ANY criteria severity=high fail_action=RETURN_TO_PHASE
+
+output:
+  decision: PASS | FAIL | BLOCKED
+  findings: [รายการที่ไม่ผิด พร้อมเหตุผล]
+  next_allowed_step: phase1 | return_to_phase0 | wait_for_human
+  logged_to_checklist: true  # ทุกการตัดสินต้องบันทึกลง Checklist Log
