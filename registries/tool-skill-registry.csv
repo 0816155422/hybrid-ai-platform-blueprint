@@ -1,0 +1,11 @@
+tool_id,name,function_description,schema_format,allowed_phases,risk_level,notes
+web_search,Web Search,ค้นหาข้อมูลจากอินเทอร์เน็ต คืน URL + snippet,{query: string, max_results: integer 1-10},phase1_only,medium,ห้ามใช้นอกเฟส1 (กันข้อมูลไม่สอดคล้อง)
+file_read,File Read,อ่านไฟล์จากคลังข้อมูล (Bronze/Silver/Gold),{path: string, format: enum[csv,json,md,pdf]},all_phases,low,อ่านอย่างเดียว ไม่สามารถแก้ไขได้
+file_write,File Write,เขียนไฟล์ลงคลังข้อมูล (ต้องระบุชั้น bronze/silver/gold),{path: string, layer: enum[bronze,silver,gold], content: string},"phase1, phase4",high,เขียนได้เฉพาะเฟส1 (bronze) และเฟส4 (gold) เท่านั้น
+llm_call,LLM Call,เรียก AI เพื่อวิเคราะห์/สรุป/แตกโจทย์,{prompt_ref: string (jinja template), variables: object, model: enum[gpt4o, claude, local]},all_phases,medium,ต้องผ่าน prompt template ห้ามเขียน prompt อิสระ
+schema_validator,Schema Validator,ตรวจสอบ record ว่าตรงกับ JSON Schema (Master Adapter),{record: object, schema_ref: string},all_phases,low,เรียกอัตโนมัติทุกครั้งที่ผ่าน Master Adapter
+user_escalation,User Escalation,ส่งให้คนตัดสินใจเมื่อ BLOCKED หรือไม่แน่นอน,{reason: string, question: string, owner_next: string},all_phases,low,ต้องมีเสมอในทุกเฟส
+url_verifier,URL Verifier,ตรวจสอบว่า URL/แหล่งอ้างอิงมีจริงและเข้าถึงได้,{url: string},"phase1, phase2, phase5",low,ใช้ตรวจ citation ก่อน PASS Gate
+data_transform,Data Transform,ประมวลผล/แปลงรูปข้อมูลด้วย Python script (ไม่ใช้ AI),{script_ref: string, input_path: string, output_path: string},"phase2, phase4",medium,ใช้สำหรับ logic ที่แน่นอน ไม่ต้องใช้ AI
+database_query,Database Query,ค้นข้อมูลจาก metadata/SQLite (Checklist Log, registry),{query: string, db: enum[metadata, checklog]},all_phases,low,อ่านอย่างเดียว
+report_generator,Report Generator,สร้างรายงานผลลัพธ์เป็น Markdown/PDF/Excel จากข้อมูล Gold,{template_ref: string, data_ref: string, format: enum[md,pdf,xlsx]},phase6_only,medium,ใช้เฉพาะเฟส6 (ส่งมอบ) เท่านั้น
