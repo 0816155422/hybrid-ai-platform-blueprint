@@ -1,0 +1,8 @@
+entry_id,phase_id,actor,timestamp,entry_type,item,status,blocker_reason,owner_next,due,links
+LOG-20261021-001,phase0,user:project_owner,2026-10-21T09:00:00+07:00,PLAN,แตกโจทย์เป็น sub-problem อย่างน้อย 5 ข้อ,TODO,,,project_owner,2026-10-21,
+LOG-20261021-002,phase0,user:project_owner,2026-10-21T09:00:00+07:00,PLAN,ระบุประเภทหลักฐานที่ต้องการสำหรับแต่ละ sub-problem,TODO,,,project_owner,2026-10-21,
+LOG-20261021-003,phase0,user:project_owner,2026-10-21T09:00:00+07:00,PLAN,ยืนยันโจทย์กับผู้ใช้ปลายทาง,TODO,,,project_owner,2026-10-21,
+LOG-20261021-004,phase0,ai:gpt-4o,2026-10-21T11:30:00+07:00,CHECK,แตกโจทย์เป็น sub-problem อย่างน้อย 5 ข้อ,DONE,,,,["phase0-output-001"]
+LOG-20261021-005,phase0,ai:gpt-4o,2026-10-21T11:30:00+07:00,CHECK,ระบุประเภทหลักฐานที่ต้องการ,DONE,,,,["phase0-output-002"]
+LOG-20261021-006,phase0,ai:gpt-4o,2026-10-21T11:30:00+07:00,CHECK,ยืนยันโจทย์กับผู้ใช้ปลายทาง,BLOCKED,ผู้ใช้ปลายทางไม่ตอบอีเมล ยังไม่ได้ยืนยัน,user:project_owner,2026-10-22,
+LOG-20261021-007,phase0,gate:reviewer,2026-10-21T14:00:00+07:00,CHECK,Gate 0 ตัดสินผล,PASS,มี 1 รายการ BLOCKED แต่บันทึกชัดเจนไม่บล็อกทั้งเฟส,,,"gate0-decision-001"
