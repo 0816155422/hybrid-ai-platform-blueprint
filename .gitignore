@@ -1,0 +1,12 @@
+# Secrets / tokens
+config/token
+*.token
+.env
+.env.*
+secrets/
+*.key
+*.pem
+
+# OS/editor
+.DS_Store
+*.swp
