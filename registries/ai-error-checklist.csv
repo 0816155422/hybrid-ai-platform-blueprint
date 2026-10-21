@@ -1,0 +1,13 @@
+check_id,error_category,check_item,applicable_phases,detection_method,mitigation_action
+ERR-001,Hallucination-Unfaithfulness,ทุก claim มี derived_from ชี้ไปยังแหล่งที่มาจริง,all_phases,Master Adapter บังคับฟิลด์ derived_from,ถ้าไม่มี = FAIL ส่งกลับไปทำใหม่
+ERR-002,Hallucination-Confabulation,ทุก citation/URL ตรวจสอบว่ามีจริงด้วย url_verifier,"phase1, phase2, phase3, phase5",เรียก url_verifier ทุก citation,ถ้า URL ไม่มีจริง = FAIL ต้องหาแหล่งแทน
+ERR-003,Hallucination-Confabulation,ไม่มีข้อมูลใหม่ที่ไม่มีต้นทาง (ไม่มี derived_from),all_phases,Gate ตรวจ cross-phase consistency,ถ้ามีข้อมูลที่ไม่มีต้นทาง = สงสัยแต่งขึ้น = BLOCKED
+ERR-004,Hallucination-FactualError,ตัวเลข/วันที่/ชื่อเปรียบเทียบได้กับ raw data ใน Bronze,"phase2, phase3, phase5",Gate เปรียบเทียบกับ raw data,ถ้าขัดแย้ง = FAIL ส่งกลับไปตรวจสอบ
+ERR-005,ToolUse-WrongTool,ทุก tool call อยู่ใน Skill Set ของเฟสนั้น,all_phases,Master Adapter ตรวจ scope ก่อนเรียก,ถ้าเรียกเครื่องมือนอก scope = บล็อกทันที บันทึกความพยายาม
+ERR-006,ToolUse-SchemaMismatch,พารามิเตอร์ของ tool call ตรงกับ JSON Schema,all_phases,Master Adapter validate schema ก่อนเรียก,ถ้าไม่ตรง = reject ไม่เรียกจริง ให้ AI ส่งใหม่
+ERR-007,ToolUse-InfiniteLoop,จำนวน tool call ไม่เกิน max_steps (กำหนดต่อเฟส),all_phases,นับจำนวนครั้งในโค้ด,ถ้าเกิน = หยุดทันที บันทึก BLOCKED รอคนตรวจ
+ERR-008,Context-MemoryDrift,output ไม่ขัดแย้งกับคำสั่งต้นฉบับ (PLAN),all_phases,Gate เปรียบเทียบ output กับ PLAN,ถ้าขัดแย้ง = FAIL ส่งกลับไปทำใหม่พร้อมเน้นคำสั่งต้นฉบับ
+ERR-009,Planning-Inconsistency,ไม่มีข้อความขัดแย้งกันเองใน output เดียว,"phase3, phase4",Gate ตรวจ self-consistency (สร้างซ้ำเปรียบเทียบ),ถ้าผิดกัน = ส่ง BLOCKED รอคนตัดสินใจ
+ERR-010,Uncertainty,ถ้า AI แสดงความไม่แน่นอน (confidence ต่ำ) ต้องส่ง BLOCKED ไม่บังคับตอบ,all_phases,AI ต้องระบุ confidence ทุกครั้ง,ถ้า confidence < threshold = user_escalation อัตโนมัติ
+ERR-011,Data-Contamination,ทุกแหล่งข้อมูลมี timestamp และระบุชัดเจนว่ามาจากไหน,phase1,Gate ตรวจ source registry,ถ้าไม่มีแหล่งที่มา = ไม่รับเข้า Bronze
+ERR-012,Output-Structure,output ตรงกับ output contract ของเฟส (schema),all_phases,Master Adapter validate,ถ้าไม่ตรง = reject ส่งกลับไปแก้รูปแบบ
