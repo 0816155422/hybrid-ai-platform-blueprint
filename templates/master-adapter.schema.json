@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Canonical Record — ทุกข้อมูลที่ผ่าน Master Adapter ต้องตรงกับ schema นี้",
+  "description": "บังคับใช้กับทุก record ที่จะเข้า/ออกเฟส หรือเข้า/ออก Gate ห้ามมีข้อยกเว้น (ถ้ามีต้องบันทึก waiver ลง Checklist Log)",
+  "type": "object",
+  "required": ["id", "phase", "derived_from", "contributes_to", "timestamp", "owner", "schema_version", "payload"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "รหัสประจำตัวไม่ซ้ำกัน เช่น raw-001, analysis-042"
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["phase0", "phase1", "phase2", "phase3", "phase4", "phase5", "phase6"],
+      "description": "สังกัดเฟสไหน"
+    },
+    "derived_from": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 0,
+      "description": "link ย้อนกลับไป input/แหล่งต้นทาง — เฟส0 อาจเป็น array ว่างได้ (รับจากผู้ใช้) แต่ต้องมี user_input_ref"
+    },
+    "contributes_to": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 0,
+      "description": "link ไปข้างหน้าสู่ output/เฟสถัดไป — เติมได้ทีหลัง แต่ต้องมีก่อนส่งต่อไปเฟสถัดไป"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 เช่น 2026-10-21T20:30:00+07:00"
+    },
+    "owner": {
+      "type": "string",
+      "pattern": "^(user|ai|gate):[a-z0-9_-]+$",
+      "description": "คน/AI ที่สร้าง record เช่น user:somchai, ai:gpt-4o, gate:reviewer"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^v\\d+\\.\\d+$",
+      "description": "เวอร์ชันของรูปแบบข้อมูล payload เช่น v1.0"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "ความมั่นใจของ AI (0-1) — ถ้า < 0.7 ต้องส่ง user_escalation อัตโนมัติ"
+    },
+    "payload": {
+      "type": "object",
+      "description": "เนื้อหาจริงของ record — โครงสร้างภายในกำหนดตาม phase contract แต่ละเฟส"
+    }
+  },
+  "additionalProperties": false
+}
